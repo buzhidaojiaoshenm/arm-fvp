@@ -1,0 +1,5 @@
+*.tgz
+.tools/
+models/
+stack
+logs
