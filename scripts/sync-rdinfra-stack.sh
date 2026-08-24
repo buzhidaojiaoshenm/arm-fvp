@@ -32,3 +32,5 @@ fi
     --depth=1
 
 "$repo_bin" sync -c -j "$(nproc)" --fetch-submodules --force-sync --no-clone-bundle
+
+bash "$repo_root/scripts/apply-rdinfra-fixes.sh"

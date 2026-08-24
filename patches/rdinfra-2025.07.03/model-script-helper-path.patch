@@ -1,0 +1,7 @@
+diff --git a/rdinfra/platforms/common_run_model.sh b/rdinfra/platforms/common_run_model.sh
+index 82f2ebe..51b68e8 100755
+--- a/rdinfra/platforms/common_run_model.sh
++++ b/rdinfra/platforms/common_run_model.sh
+@@ -49 +49 @@ HEADLESS="false"
+-source $PWD/../../sgi/sgi_common_util.sh
++source $PWD/../../../sgi/sgi_common_util.sh

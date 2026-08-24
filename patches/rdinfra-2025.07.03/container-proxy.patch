@@ -1,0 +1,25 @@
+diff --git a/common/install-clang.sh b/common/install-clang.sh
+index 227b41d..aabef2f 100644
+--- a/common/install-clang.sh
++++ b/common/install-clang.sh
+@@ -79 +79 @@ pushd ${tmp_path} > /dev/null
+-wget -nv ${archive_url}
++curl --fail --location --retry 3 --retry-all-errors --output "${toolchain}.tar.xz" "${archive_url}"
+diff --git a/container.sh b/container.sh
+index a9dacfb..851874a 100755
+--- a/container.sh
++++ b/container.sh
+@@ -94,2 +94,8 @@ function build_image()
+-    local PROXY=""
+-    [[ -v DOCKERHUB_PROXY ]] && PROXY="--build-arg DOCKERHUB_PROXY=${DOCKERHUB_PROXY}"
++    local BUILD_ARGS=()
++    [[ -v DOCKERHUB_PROXY ]] && BUILD_ARGS+=(--build-arg "DOCKERHUB_PROXY=${DOCKERHUB_PROXY}")
++    [[ -v HTTP_PROXY ]] && BUILD_ARGS+=(--build-arg "HTTP_PROXY=${HTTP_PROXY}")
++    [[ -v HTTPS_PROXY ]] && BUILD_ARGS+=(--build-arg "HTTPS_PROXY=${HTTPS_PROXY}")
++    [[ -v ALL_PROXY ]] && BUILD_ARGS+=(--build-arg "ALL_PROXY=${ALL_PROXY}")
++    [[ -v http_proxy ]] && BUILD_ARGS+=(--build-arg "http_proxy=${http_proxy}")
++    [[ -v https_proxy ]] && BUILD_ARGS+=(--build-arg "https_proxy=${https_proxy}")
++    [[ -v all_proxy ]] && BUILD_ARGS+=(--build-arg "all_proxy=${all_proxy}")
+@@ -102 +108 @@ function build_image()
+-        ${PROXY} \
++        "${BUILD_ARGS[@]}" \
