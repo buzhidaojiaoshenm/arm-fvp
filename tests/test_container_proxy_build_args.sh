@@ -5,7 +5,7 @@ root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 script="$root/stack/container-scripts/container.sh"
 
 test -x "$root/scripts/apply-rdinfra-fixes.sh"
-grep -Fq 'bash "$root/scripts/apply-rdinfra-fixes.sh"' "$root/scripts/sync-rdinfra-stack.sh"
+grep -Fq 'bash "$repo_root/scripts/apply-rdinfra-fixes.sh"' "$root/scripts/sync-rdinfra-stack.sh"
 grep -Fq -- '--build-arg "HTTP_PROXY=${HTTP_PROXY}"' "$script"
 grep -Fq -- '--build-arg "HTTPS_PROXY=${HTTPS_PROXY}"' "$script"
 grep -Fq -- '--build-arg "ALL_PROXY=${ALL_PROXY}"' "$script"
