@@ -13,8 +13,9 @@ contained EULA, then copy these files to the repository root:
 - `FVP_RD_V3_R1_11.29_35_Linux64.tgz`
 - `FVP_RD_V3_R1_Cfg1_11.29_35_Linux64.tgz`
 
-The archives, installed models, synchronized source tree, build products, and
-logs are intentionally ignored by Git.
+The archives, installed models, build products, and logs are intentionally
+ignored by Git. The RD-INFRA source repositories are recorded as pinned Git
+submodules; their source objects are fetched from the respective upstreams.
 
 ## Host prerequisites
 
@@ -28,7 +29,8 @@ logs are intentionally ignored by Git.
 ## Clone and prepare
 
 ```bash
-git clone git@github.com:buzhidaojiaoshenm/arm-fvp.git
+git clone --recurse-submodules --shallow-submodules \
+  git@github.com:buzhidaojiaoshenm/arm-fvp.git
 cd arm-fvp
 ```
 
@@ -88,6 +90,7 @@ for test in tests/test_*.sh; do bash "$test"; done
 
   完整链路可以概括为：
 
+  ```text
   FVP 安装包                     Arm RD-INFRA 源码
       │                                │
       │ 安装预编译模型                 │ Docker 中编译
@@ -105,6 +108,7 @@ for test in tests/test_*.sh; do bash "$test"; done
                                    │ 作为参数加载进 FVP
                                    ▼
    RSE → SCP/MCP/LCP → TF-A → RMM → UEFI → GRUB → Linux → Buildroot
+  ```
 
   ———
 
@@ -141,49 +145,37 @@ for test in tests/test_*.sh; do bash "$test"; done
 
   bash scripts/sync-rdinfra-stack.sh
 
-  脚本通过 Google repo 工具读取 Arm 的 manifest：
+  父仓库通过 `.gitmodules` 记录 19 个上游 Git submodule，并将每个仓库固定到
+  `RD-INFRA-2025.07.03` 对应的精确提交。脚本先执行浅递归初始化；若上游不支持
+  shallow fetch，则自动退回普通递归初始化。随后装配 EDK2 Platforms 兼容路径并
+  应用本仓库维护的补丁。
 
-  https://git.gitlab.arm.com/infra-solutions/reference-design/infra-refdesign-manifests.git
-
-  并固定到：
-
-  manifest: pinned-rdv3r1.xml
-  release:  RD-INFRA-2025.07.03
-
-  入口见 scripts/sync-rdinfra-stack.sh:28。
+  入口见 `scripts/sync-rdinfra-stack.sh`。
 
   同步后，stack/ 下主要包含：
 
-   目录                  内容
-  ━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━
-   tf-m/                 RSE/TF-M 安全固件
-  ────────────────────  ──────────────────────────
-   scp/                  SCP、MCP、LCP 固件
-  ────────────────────  ──────────────────────────
-   tf-a/                 AP 侧 BL1、BL2、BL31
-  ────────────────────  ──────────────────────────
-   rmm/                  Realm Management Monitor
-  ────────────────────  ──────────────────────────
-   uefi/edk2/            UEFI 固件
-  ────────────────────  ──────────────────────────
-   linux/                Linux 内核
-  ────────────────────  ──────────────────────────
-   buildroot/            根文件系统
-  ────────────────────  ──────────────────────────
-   grub/                 GRUB EFI 引导程序
-  ────────────────────  ──────────────────────────
-   kvmtool/              Realm/KVM 测试工具
-  ────────────────────  ──────────────────────────
-   build-scripts/        组件编译和打包框架
-  ────────────────────  ──────────────────────────
-   model-scripts/        FVP 启动脚本
-  ────────────────────  ──────────────────────────
-   container-scripts/    Docker 构建环境
+| 目录 | 内容 |
+| --- | --- |
+| `tf-m/` | RSE/TF-M 安全固件 |
+| `scp/` | SCP、MCP、LCP 固件 |
+| `tf-a/` | AP 侧 BL1、BL2、BL31 |
+| `rmm/` | Realm Management Monitor |
+| `uefi/edk2/` | UEFI 固件 |
+| `uefi/edk2-platforms/` | EDK2 平台代码；同步脚本装配兼容路径 |
+| `linux/` | Linux 内核 |
+| `buildroot/` | 根文件系统 |
+| `grub/` | GRUB EFI 引导程序 |
+| `kvmtool/` | Realm/KVM 测试工具 |
+| `build-scripts/` | 组件编译和打包框架 |
+| `model-scripts/` | FVP 启动脚本 |
+| `container-scripts/` | Docker 构建环境 |
 
-  同步完成后还会应用两个本地兼容补丁：
+  同步完成后还会应用四个本地兼容补丁：
 
   - Docker 构建时代理和下载重试支持。
   - common_run_model.sh 的公共辅助脚本路径修复。
+  - Buildroot 的 util-linux binaries 和 numactl 包配置。
+  - Realm 测试的 PMU counter 数量适配。
 
   见 scripts/apply-rdinfra-fixes.sh:19。
 
@@ -279,21 +271,15 @@ for test in tests/test_*.sh; do bash "$test"; done
 
   ## 4. 两个平台的主要差异
 
-   参数                                RD-V3-R1       RD-V3-R1-Cfg1
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━
-   CHIP_COUNT                                 2                   4
-  ──────────────────────────  ──────────────────  ──────────────────
-   TF_M_PLATFORM_VARIANT                      0                   1
-  ──────────────────────────  ──────────────────  ──────────────────
-   SCP_PLATFORM_VARIANT                       0                   1
-  ──────────────────────────  ──────────────────  ──────────────────
-   TF_A_PLATFORM_VARIANT                      0                   1
-  ──────────────────────────  ──────────────────  ──────────────────
-   UEFI 平台                             RdV3R1          RdV3R1Cfg1
-  ──────────────────────────  ──────────────────  ──────────────────
-   FVP 拓扑                    1 socket × 2 CSS    2 socket × 2 CSS
-  ──────────────────────────  ──────────────────  ──────────────────
-   每芯片 provisioning 镜像                0、1          0、1、2、3
+| 参数 | RD-V3-R1 | RD-V3-R1-Cfg1 |
+| --- | --- | --- |
+| `CHIP_COUNT` | 2 | 4 |
+| `TF_M_PLATFORM_VARIANT` | 0 | 1 |
+| `SCP_PLATFORM_VARIANT` | 0 | 1 |
+| `TF_A_PLATFORM_VARIANT` | 0 | 1 |
+| UEFI 平台 | `RdV3R1` | `RdV3R1Cfg1` |
+| FVP 拓扑 | 1 socket × 2 CSS | 2 socket × 2 CSS |
+| 每芯片 provisioning 镜像 | 0、1 | 0、1、2、3 |
 
   参见 stack/build-scripts/configs/rdv3r1/rdv3r1:33和 stack/build-scripts/configs/rdv3r1cfg1/rdv3r1cfg1:33。
 
@@ -301,6 +287,7 @@ for test in tests/test_*.sh; do bash "$test"; done
 
   平台配置最终给出的顺序是：
 
+  ```text
   RMM
     ↓
   kvmtool / kvm-unit-tests
@@ -324,6 +311,7 @@ for test in tests/test_*.sh; do bash "$test"; done
   GRUB
     ↓
   Target Binaries 汇总
+  ```
 
   配置入口见 stack/build-scripts/configs/rdv3r1/rdv3r1:194。
 
@@ -531,25 +519,17 @@ for test in tests/test_*.sh; do bash "$test"; done
 
   当前实际 FIP 中包含：
 
-   FIP 条目        来源
-  ━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━
-   BL2             TF-A
-  ──────────────  ─────────────────
-   BL31            TF-A
-  ──────────────  ─────────────────
-   BL33            UEFI
-  ──────────────  ─────────────────
-   RMM             RMM
-  ──────────────  ─────────────────
-   FW_CONFIG       TF-A 平台配置
-  ──────────────  ─────────────────
-   HW_CONFIG       TF-A 平台配置
-  ──────────────  ─────────────────
-   TB_FW_CONFIG    TF-A 平台配置
-  ──────────────  ─────────────────
-   NT_FW_CONFIG    TF-A 平台配置
-  ──────────────  ─────────────────
-   证书            TBBR/CCA 证书链
+| FIP 条目 | 来源 |
+| --- | --- |
+| BL2 | TF-A |
+| BL31 | TF-A |
+| BL33 | UEFI |
+| RMM | RMM |
+| `FW_CONFIG` | TF-A 平台配置 |
+| `HW_CONFIG` | TF-A 平台配置 |
+| `TB_FW_CONFIG` | TF-A 平台配置 |
+| `NT_FW_CONFIG` | TF-A 平台配置 |
+| 证书 | TBBR/CCA 证书链 |
 
   UEFI 作为 Non-Trusted Firmware BL33 写入 FIP。stack/build-scripts/build-target-bins.sh:474
 
@@ -561,6 +541,7 @@ for test in tests/test_*.sh; do bash "$test"; done
 
   当前镜像是约 222 MiB 的 GPT 磁盘：
 
+  ```text
   GPT
   ├── 分区 1：20 MiB FAT
   │   ├── /EFI/BOOT/bootaa64.efi
@@ -571,6 +552,7 @@ for test in tests/test_*.sh; do bash "$test"; done
       ├── /smmute
       ├── /lkvm
       └── /kvm-ut/
+  ```
 
   创建过程见 stack/build-scripts/sgi/build-test-buildroot.sh:173。
 
@@ -585,6 +567,7 @@ for test in tests/test_*.sh; do bash "$test"; done
 
   RD-V3-R1：
 
+  ```text
   stack/output/rdv3r1/
   ├── grub-buildroot.img
   ├── ramdisk-buildroot.img
@@ -599,6 +582,7 @@ for test in tests/test_*.sh; do bash "$test"; done
       ├── Image
       ├── rmm.img
       └── uefi.bin
+  ```
 
   Cfg1 对应：
 
@@ -642,19 +626,14 @@ for test in tests/test_*.sh; do bash "$test"; done
 
   运行脚本建立三条装载路径：
 
-   镜像                              FVP 装载位置                  用途
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   tf_m_rom.bin                      每个 RSE 的 ROM               RSE 第一级启动
-  ────────────────────────────────  ────────────────────────────  ───────────────────────────────
-   tf_m_flash.bin                    每个 RSE 的 Flash 地址        TF-M、SCP/MCP/LCP、AP BL1
-  ────────────────────────────────  ────────────────────────────  ───────────────────────────────
-   tf_m_vm0/1_<chip>.bin             每个 RSE provisioning 地址    芯片身份和安全配置
-  ────────────────────────────────  ────────────────────────────  ───────────────────────────────
-   fip-uefi.bin                      AP flashloader0               BL2、BL31、RMM、UEFI
-  ────────────────────────────────  ────────────────────────────  ───────────────────────────────
-   grub-buildroot.img                VirtIO block device           GRUB、Linux、Buildroot rootfs
-  ────────────────────────────────  ────────────────────────────  ───────────────────────────────
-   nor1_flash.img、nor2_flash.img    可写 NOR                      UEFI 变量和持久化数据
+| 镜像 | FVP 装载位置 | 用途 |
+| --- | --- | --- |
+| `tf_m_rom.bin` | 每个 RSE 的 ROM | RSE 第一级启动 |
+| `tf_m_flash.bin` | 每个 RSE 的 Flash 地址 | TF-M、SCP/MCP/LCP、AP BL1 |
+| `tf_m_vm0/1_<chip>.bin` | 每个 RSE provisioning 地址 | 芯片身份和安全配置 |
+| `fip-uefi.bin` | AP flashloader0 | BL2、BL31、RMM、UEFI |
+| `grub-buildroot.img` | VirtIO block device | GRUB、Linux、Buildroot rootfs |
+| `nor1_flash.img`、`nor2_flash.img` | 可写 NOR | UEFI 变量和持久化数据 |
 
   RD-V3-R1 的具体装载参数见 stack/model-scripts/rdinfra/platforms/rdv3r1/run_model.sh:238。
 
@@ -667,6 +646,7 @@ for test in tests/test_*.sh; do bash "$test"; done
 
   完整启动过程是：
 
+  ```text
   FVP 启动
     │
     ├─ RSE ROM：tf_m_rom.bin
@@ -717,6 +697,7 @@ for test in tests/test_*.sh; do bash "$test"; done
     │
     └─ Buildroot
            └─ 输出 buildroot login:
+  ```
 
   当前保存的成功日志也体现了：
 

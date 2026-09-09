@@ -7,7 +7,8 @@ This workspace pairs the Arm FVP 11.29.35 bundles with the pinned
 
 - `FVP_RD_V3_R1_11.29_35_Linux64.tgz`
 - `FVP_RD_V3_R1_Cfg1_11.29_35_Linux64.tgz`
-- `infra-refdesign-manifests` tag `RD-INFRA-2025.07.03`
+- 19 Git submodules pinned to the component commits selected by
+  `RD-INFRA-2025.07.03`
 
 The firmware build runs in Docker. The current user must be able to run
 `docker` without an interactive `sudo` prompt. Arm documents Ubuntu 22.04 and
@@ -16,7 +17,16 @@ has been validated with the workflow below.
 
 ## Workflow
 
-Run the commands from the repository root in this order:
+Clone the parent repository and its pinned Git submodules:
+
+```bash
+git clone --recurse-submodules --shallow-submodules \
+  git@github.com:buzhidaojiaoshenm/arm-fvp.git
+cd arm-fvp
+```
+
+The FVP archives are not included. Copy both archives to the repository root
+only after obtaining them from Arm and accepting the contained EULA. Then run:
 
 ```bash
 bash scripts/install-fvps.sh
@@ -32,7 +42,7 @@ The six wrappers have the following roles:
 | Wrapper | Purpose |
 | --- | --- |
 | `scripts/install-fvps.sh` | Install both supplied FVP bundles below `models/`. |
-| `scripts/sync-rdinfra-stack.sh` | Sync the pinned Arm stack and apply the tracked compatibility fixes. |
+| `scripts/sync-rdinfra-stack.sh` | Initialize pinned submodules, assemble the EDK2 Platforms path, and apply tracked fixes. |
 | `scripts/build-rdv3r1.sh` | Build and package the `rdv3r1` Buildroot stack in Docker. |
 | `scripts/run-rdv3r1.sh` | Run the RD-V3-R1 headless boot validation. |
 | `scripts/build-rdv3r1-cfg1.sh` | Build and package the `rdv3r1cfg1` Buildroot stack in Docker. |
@@ -97,7 +107,9 @@ stack/model-scripts/rdinfra/platforms/rdv3r1cfg1/rdv3r1cfg1/
 The non-secure console filenames contain `uart-0-nsec`. Build command output
 can be retained separately under `logs/rdv3r1/` and `logs/rdv3r1-cfg1/`.
 Generated models, stack sources, artifacts, archives, and logs are intentionally
-not tracked by Git.
+not copied into the parent Git history. The parent tracks each stack repository
+as a Git submodule link; generated artifacts, FVP archives, models, and logs
+remain ignored.
 
 ## Host memory requirement
 
