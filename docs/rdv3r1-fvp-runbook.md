@@ -43,6 +43,17 @@ output without opening graphical terminals, wait for `buildroot login`, and
 terminate the model after the marker is observed. A successful run exits with
 status 0 and prints `Buildroot boot test completed`.
 
+For a persistent RD-V3-R1 run that delegates console handling to the upstream
+model scripts, use the explicit interactive mode:
+
+```bash
+bash scripts/run-rdv3r1.sh --interactive
+```
+
+This mode omits `-j -t`, so it does not automatically stop the model after the
+Buildroot login marker. RD-V3-R1-Cfg1 currently provides the automated
+validation mode only.
+
 ## Models and artifacts
 
 The installed executables are:
