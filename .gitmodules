@@ -1,0 +1,95 @@
+[submodule "build-scripts"]
+	path = stack/build-scripts
+	url = https://git.gitlab.arm.com/infra-solutions/reference-design/scripts/build-scripts
+	shallow = true
+	ignore = untracked
+[submodule "buildroot"]
+	path = stack/buildroot
+	url = https://git.gitlab.arm.com/infra-solutions/reference-design/platsw/buildroot
+	shallow = true
+	ignore = untracked
+[submodule "busybox"]
+	path = stack/busybox
+	url = https://github.com/mirror/busybox
+	shallow = true
+	ignore = untracked
+[submodule "container-scripts"]
+	path = stack/container-scripts
+	url = https://git.gitlab.arm.com/infra-solutions/reference-design/scripts/container-scripts
+	shallow = true
+	ignore = untracked
+[submodule "grub"]
+	path = stack/grub
+	url = https://git.savannah.gnu.org/git/grub.git
+	shallow = true
+	ignore = untracked
+[submodule "hafnium"]
+	path = stack/hafnium
+	url = https://git.trustedfirmware.org/hafnium/hafnium.git
+	shallow = true
+	ignore = untracked
+[submodule "kvmtool"]
+	path = stack/kvmtool
+	url = https://git.gitlab.arm.com/linux-arm/kvmtool-cca
+	shallow = true
+	ignore = untracked
+[submodule "linux"]
+	path = stack/linux
+	url = https://git.gitlab.arm.com/infra-solutions/reference-design/platsw/linux
+	shallow = true
+	ignore = untracked
+[submodule "mbedtls"]
+	path = stack/mbedtls
+	url = https://github.com/ARMmbed/mbedtls.git
+	shallow = true
+	ignore = untracked
+[submodule "model-scripts"]
+	path = stack/model-scripts
+	url = https://git.gitlab.arm.com/infra-solutions/reference-design/scripts/model-scripts
+	shallow = true
+	ignore = untracked
+[submodule "rmm"]
+	path = stack/rmm
+	url = https://git.gitlab.arm.com/infra-solutions/reference-design/platsw/tf-rmm
+	shallow = true
+	ignore = untracked
+[submodule "scp"]
+	path = stack/scp
+	url = https://git.gitlab.arm.com/infra-solutions/reference-design/platsw/scp-firmware
+	shallow = true
+	ignore = untracked
+[submodule "tf-a"]
+	path = stack/tf-a
+	url = https://git.gitlab.arm.com/infra-solutions/reference-design/platsw/trusted-firmware-a
+	shallow = true
+	ignore = untracked
+[submodule "tf-m"]
+	path = stack/tf-m
+	url = https://git.gitlab.arm.com/infra-solutions/reference-design/platsw/trusted-firmware-m
+	shallow = true
+	ignore = untracked
+[submodule "tools-acpica"]
+	path = stack/tools/acpica
+	url = https://github.com/acpica/acpica
+	shallow = true
+	ignore = untracked
+[submodule "tools-efitools"]
+	path = stack/tools/efitools
+	url = https://git.kernel.org/pub/scm/linux/kernel/git/jejb/efitools
+	shallow = true
+	ignore = untracked
+[submodule "uefi-edk2"]
+	path = stack/uefi/edk2
+	url = https://git.gitlab.arm.com/infra-solutions/reference-design/platsw/edk2
+	shallow = true
+	ignore = untracked
+[submodule "uefi-edk2-platforms"]
+	path = stack/uefi/edk2-platforms
+	url = https://git.gitlab.arm.com/infra-solutions/reference-design/platsw/edk2-platforms
+	shallow = true
+	ignore = untracked
+[submodule "kvm-unit-tests"]
+	path = stack/validation/sys-test/kvm-unit-tests
+	url = https://git.gitlab.arm.com/infra-solutions/reference-design/valsw/kvm-unit-tests
+	shallow = true
+	ignore = untracked

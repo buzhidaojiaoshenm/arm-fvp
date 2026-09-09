@@ -1,5 +1,7 @@
 *.tgz
 .tools/
 models/
-stack
+/stack/.repo/
+/stack/output/
+/stack/venv-tf-m/
 logs
