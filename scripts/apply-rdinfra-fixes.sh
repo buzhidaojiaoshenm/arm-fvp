@@ -20,3 +20,7 @@ apply_once "$root/stack/container-scripts" \
     "$root/patches/rdinfra-2025.07.03/container-proxy.patch"
 apply_once "$root/stack/model-scripts" \
     "$root/patches/rdinfra-2025.07.03/model-script-helper-path.patch"
+apply_once "$root/stack/build-scripts" \
+    "$root/patches/rdinfra-2025.07.03/buildroot-packages.patch"
+apply_once "$root/stack/validation/sys-test/kvm-unit-tests" \
+    "$root/patches/rdinfra-2025.07.03/kvm-unit-tests-pmu.patch"

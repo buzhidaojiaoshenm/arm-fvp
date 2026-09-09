@@ -1,0 +1,13 @@
+diff --git a/arm/run-realm-tests b/arm/run-realm-tests
+index 839f2bf..0995f27 100755
+--- a/arm/run-realm-tests
++++ b/arm/run-realm-tests
+@@ -7,7 +7,7 @@
+ TASKSET=${TASKSET:-taskset}
+ LKVM=${LKVM:-lkvm}
+ ARGS="--realm --restricted_mem --irqchip=gicv3 --console=serial --network mode=none --nodefaults --loglevel error"
+-PMU_ARGS="--pmu --pmu-counters=8"
++PMU_ARGS="--pmu --pmu-counters=6"
+ 
+ TESTDIR="."
+ while getopts "d:" option; do

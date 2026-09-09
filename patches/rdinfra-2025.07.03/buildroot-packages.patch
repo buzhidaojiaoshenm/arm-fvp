@@ -1,0 +1,14 @@
+diff --git a/configs/rdv3r1/buildroot/aarch64_rdinfra_defconfig b/configs/rdv3r1/buildroot/aarch64_rdinfra_defconfig
+index a5a20c2..2e828a9 100644
+--- a/configs/rdv3r1/buildroot/aarch64_rdinfra_defconfig
++++ b/configs/rdv3r1/buildroot/aarch64_rdinfra_defconfig
+@@ -14,7 +14,9 @@ BR2_PACKAGE_KVMTOOL=y
+ BR2_PACKAGE_DMIDECODE=y
+ BR2_PACKAGE_STRESS_NG=y
+ BR2_PACKAGE_UTIL_LINUX=y
++BR2_PACKAGE_UTIL_LINUX_BINARIES=y
+ BR2_PACKAGE_UTIL_LINUX_SCHEDUTILS=y
++BR2_PACKAGE_NUMACTL=y
+ 
+ # Target filesystem
+ BR2_TARGET_ROOTFS_CPIO=y
