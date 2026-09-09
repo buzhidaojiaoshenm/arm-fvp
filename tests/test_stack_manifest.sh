@@ -40,3 +40,21 @@ uefi-edk2	stack/uefi/edk2	https://git.gitlab.arm.com/infra-solutions/reference-d
 uefi-edk2-platforms	stack/uefi/edk2-platforms	https://git.gitlab.arm.com/infra-solutions/reference-design/platsw/edk2-platforms	d504fc6d655d4cc07687eee02c668ccaadfe85ce
 kvm-unit-tests	stack/validation/sys-test/kvm-unit-tests	https://git.gitlab.arm.com/infra-solutions/reference-design/valsw/kvm-unit-tests	b3e4f17eda04e6f2ae3419c3060064af1ef81b70
 SUBMODULES
+
+sync_script=scripts/sync-rdinfra-stack.sh
+grep -Fq 'git submodule sync --recursive' "$sync_script"
+grep -Fq 'git submodule init' "$sync_script"
+grep -Fq 'git submodule update --init --recursive --depth=1' "$sync_script"
+grep -Fq 'git submodule update --init --recursive --jobs' "$sync_script"
+grep -Fq '../edk2-platforms' "$sync_script"
+grep -Fq 'bash "$repo_root/scripts/apply-rdinfra-fixes.sh"' "$sync_script"
+
+if grep -Eq '\.tools/bin/repo|\.repo/manifest\.xml|resolved_manifest' "$sync_script"; then
+    printf 'Legacy Google Repo synchronization remains in %s\n' "$sync_script" >&2
+    exit 1
+fi
+
+if grep -Fq 'git submodule absorbgitdirs' "$sync_script"; then
+    printf 'Repo-managed gitdirs must remain in place during migration\n' >&2
+    exit 1
+fi
