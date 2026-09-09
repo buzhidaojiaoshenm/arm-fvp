@@ -186,7 +186,7 @@ small enough for a normal GitHub push.
 Run:
 
 ```bash
-git grep -nEI '(BEGIN (RSA|OPENSSH|EC) PRIVATE KEY|github_pat_|ghp_[A-Za-z0-9]|AKIA[0-9A-Z]{16})'
+git grep -nEI '(BEGIN (RSA|OPENSSH|EC) PRIVATE KEY|github_[p]at_|ghp_[A-Za-z0-9]|AKIA[0-9A-Z]{16})'
 ```
 
 Expected: exit status 1 with no matches.
