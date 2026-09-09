@@ -243,8 +243,10 @@ Run:
 
 ```bash
 bash tests/test_fvp_runbook.sh
-bash tests/test_install_fvps.sh
+bash -n scripts/install-fvps.sh
+grep -Fq 'FVP_RD_V3_R1_11.29_35_Linux64.tgz' scripts/install-fvps.sh
+grep -Fq 'FVP_RD_V3_R1_Cfg1_11.29_35_Linux64.tgz' scripts/install-fvps.sh
 ```
 
-Expected: both static tests exit 0 without requiring licensed archives,
-installed models, or a generated stack.
+Expected: the runbook test and static installer checks exit 0 without requiring
+licensed archives, installed models, or a generated stack.
